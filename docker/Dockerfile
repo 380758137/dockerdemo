@@ -1,18 +1,18 @@
-FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
+FROM microsoft/dotnet:2.2-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM microsoft/dotnet:2.2-sdk AS build
+FROM microsoft/dotnet:2.2-sdk-stretch AS build
 WORKDIR /src
-COPY ["docker/docker.csproj", "docker/"]
-RUN dotnet restore "docker/docker.csproj"
+COPY docker/docker.csproj docker/
+RUN dotnet restore docker/docker.csproj
 COPY . .
-WORKDIR "/src/docker"
-RUN dotnet build "docker.csproj" -c Release -o /app
+WORKDIR /src/docker
+RUN dotnet build docker.csproj -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "docker.csproj" -c Release -o /app
+RUN dotnet publish docker.csproj -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
